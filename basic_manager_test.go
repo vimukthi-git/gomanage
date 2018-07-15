@@ -47,10 +47,11 @@ func TestBasicManager_Remove(t *testing.T) {
 	}
 }
 
-//func TestBasicManager_Start(t *testing.T) {
-//	bm := NewBasicManager()
-//	bm.Start(8080)
-//}
+func TestBasicManager_Start(t *testing.T) {
+	bm := NewBasicManager()
+	bm.Add("testm", managerFuncSpecForTests)
+	bm.Start(8080)
+}
 
 var managerFuncForTests = func (params map[string]string) (string, error) {
 	return params["first"], nil

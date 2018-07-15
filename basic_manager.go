@@ -9,11 +9,13 @@ import (
 
 type basicManager struct {
 
+	httpEngine *gin.Engine
+
 	managerFunctions map[string]*ManagerFuncSpec
 }
 
 func NewBasicManager() Manager {
-	return &basicManager{make(map[string]*ManagerFuncSpec)}
+	return &basicManager{gin.Default(), make(map[string]*ManagerFuncSpec)}
 }
 
 func (bm *basicManager) Add(key string, managerFuncSpec *ManagerFuncSpec) error {
@@ -21,6 +23,17 @@ func (bm *basicManager) Add(key string, managerFuncSpec *ManagerFuncSpec) error 
 		return errors.New("The manager function already exists. Use different key or remove existing")
 	}
 	bm.managerFunctions[key] = managerFuncSpec
+	bm.httpEngine.POST("/" + key, func(c *gin.Context) {
+		var params map[string]string
+		if c.BindJSON(&params) == nil {
+			ret, _ := managerFuncSpec.managerFunc(params)
+			c.JSON(200, ret)
+		} else {
+			c.JSON(400, gin.H{
+				"message": "check parameters",
+			})
+		}
+	})
 	return nil
 }
 
@@ -45,13 +58,7 @@ func (bm *basicManager) ListEndpoints(spec string) string {
 
 
 func (bm *basicManager) Start(port int) error {
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run() // listen and serve on 0.0.0.0:8080
+	bm.httpEngine.Run() // listen and serve on 0.0.0.0:8080
 	return nil
 }
 

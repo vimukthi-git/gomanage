@@ -7,7 +7,7 @@ type ManagerFuncSpec struct {
 	paramNames []string
 }
 
-// Func creates new manager function according to ManagerFuncSpec
+// Func creates a new manager function according to ManagerFuncSpec
 func Func(managerFunc ManagerFunc, paramNames ...string) *ManagerFuncSpec {
 	return &ManagerFuncSpec{managerFunc, paramNames}
 }
