@@ -1,0 +1,1 @@
+## Gomanage is a manager interface generator for go applications
